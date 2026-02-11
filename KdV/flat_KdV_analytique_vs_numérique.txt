@@ -1,0 +1,97 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+import sys 
+
+# Paramètres du domaine
+L = 50       # Longueur du domaine spatial
+T = 30       # Durée de la simulation
+dt = 0.0001  # Pas temporel
+dx = 0.1     # Pas spatial
+Nx = int(L/dx)   # Nombre de points dans l'espace
+Nt = int(T/dt)   # Nombre de pas de temps
+x = np.linspace(0, L, Nx)  # Domaine spatial
+
+# Paramètres KdV
+alpha = 0.01     # Paramètre non-linéaire
+beta = 0.00625  # Paramètre dispersif
+delta = 0.0      # Paramètre de fond incliné (plat ici)
+k = 0
+
+# Initialisation : une vague solitaire (soliton)
+A = 1  # Amplitude
+u_4 = np.zeros((Nt,Nx))
+u_2 = np.zeros((Nt,Nx))
+u_4[0, :] = A * (1 / np.cosh(np.sqrt(3 / 4 * (alpha / beta) * A) * (x - 10)))**2
+u_2[0, :] = A * (1 / np.cosh(np.sqrt(3 / 4 * (alpha / beta) * A) * (x - 10)))**2
+
+# Solution analytique 
+def eta(x,t):
+    return (A * (1 / np.cosh(np.sqrt(3 / 4 * (alpha / beta) * A) * (x - 10 - (1 + (1/2)*alpha*A)*t)))**2)
+
+start_time = time.time()
+# Vectorisation des calculs pour chaque n
+for n in range(Nt-1):
+    # Termes calculés avec des fenêtres de voisinage sur u (FTCS 4eme ordre)
+    u_4jm1 = np.roll(u_4[n], 1)  # Décalage de 1 pour u[j-1]
+    u_4jm2 = np.roll(u_4[n], 2)  # Décalage de 2 pour u[j-2]
+    u_4jm3 = np.roll(u_4[n], 3)  # Décalage de 3 pour u[j-3]
+    u_4jp1 = np.roll(u_4[n], -1)  # Décalage de -1 pour u[j+1]
+    u_4jp2 = np.roll(u_4[n], -2)  # Décalage de -2 pour u[j+2]
+    u_4jp3 = np.roll(u_4[n], -3)  # Décalage de -3 pour u[j+3]
+
+    # Termes calculés avec des fenêtres de voisinage sur u (FTCS 2eme ordre)
+    u_2jm1 = np.roll(u_2[n], 1)  # Décalage de 1 pour u[j-1]
+    u_2jm2 = np.roll(u_2[n], 2)  # Décalage de 2 pour u[j-2]
+    u_2jp1 = np.roll(u_2[n], -1)  # Décalage de -1 pour u[j+1]
+    u_2jp2 = np.roll(u_2[n], -2)  # Décalage de -2 pour u[j+2]
+
+    # Calcul de u[n+1, :] (FTCS 4eme ordre)
+    u_4[n + 1, :] = u_4[n, :] \
+        - dt / dx * (1/12 * u_4jm2 - 2/3 * u_4jm1 + 2/3 * u_4jp1 - 1/12 * u_4jp2) \
+        - dt / dx * 3/4 * alpha * (1/12 * u_4jm2**2 - 2/3 * u_4jm1**2 + 2/3 * u_4jp1**2 - 1/12 * u_4jp2**2) \
+        - dt / (dx**3) * 1/6 * beta * (1/8 * u_4jm3 - u_4jm2 + 13/8 * u_4jm1 - 13/8 * u_4jp1 + u_4jp2 - 1/8 * u_4jp3) \
+        + dt/4 * delta * (k * u_4[n, :] + 2 * k * x * (1/12 * u_4jm2 - 2/3 * u_4jm1 + 2/3 * u_4jp1 - 1/12 * u_4jp2))
+    
+    # Calcul de u[n+1, :] (FTCS 2eme ordre)
+    u_2[n + 1, :] = u_2[n, :] \
+        - dt / dx * 1/2 * (u_2jp1 - u_2jm1) \
+        - dt / dx * 3/8 * alpha * (u_2jp1**2 - u_2jm1**2) \
+        - dt / (dx**3) * 1/12 * beta * (u_2jp2 - 2 * u_2jp1 + 2 * u_2jm1 - u_2jm2) \
+        + dt/4 * delta * (k * u_2[n, :] + k * x * (u_2jp1 - u_2jm1))
+    
+    # Progression et temps estimé restant
+    elapsed_time = time.time() - start_time
+    progress = ((n+1) / (Nt-1)) * 100
+    time_per_iteration = elapsed_time / (n+1)
+    remaining_iterations = ((Nt-1) - (n+1))
+    estimated_time_remaining = time_per_iteration * remaining_iterations
+    minutes, seconds = divmod(int(estimated_time_remaining), 60)
+    sys.stdout.write('\rProgression: [{:.0f}%] Temps restant : {} minutes {} secondes'.format(progress, minutes, seconds))
+    sys.stdout.flush()
+
+# Affichage avec 3 sous-graphiques
+fig, axs = plt.subplots(3, 1, figsize=(12, 6), sharex=True)
+
+# Sélection des instants de temps (par exemple, t = 0, t = milieu, t = fin)
+time_indices = [0, Nt // 2, Nt - 1]
+time_labels = ["Début", "Milieu", "Fin"]
+
+for i, ax in enumerate(axs):
+    n = time_indices[i]
+    # Trace des solutions
+    ax.plot(x, eta(x, n * dt), 'r-', label="Solution analytique")
+    ax.plot(x, u_2[n, :], 'g-', label="FTCS 2ème ordre")
+    ax.plot(x, u_4[n, :], 'b--', label="FTCS 4ème ordre")
+    
+    # Paramètres du sous-graphe
+    ax.set_ylabel("Hauteur de la vague (η)")
+    ax.set_title(time_labels[i])
+    ax.grid(True)
+    if i == 2:  # Ajouter le label X seulement pour le dernier subplot
+        ax.set_xlabel("x")
+    ax.legend()
+
+# Ajustement des espaces entre subplots
+fig.tight_layout()
+plt.show()

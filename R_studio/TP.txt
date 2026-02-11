@@ -1,0 +1,94 @@
+TP – Evaluation du cours de Bertrand Iooss
+Polytech Nice Sophia – 2026
+Ce TP (à réaliser en binôme ou en solo) est à rendre pour le 27 février 2026. Vous devrez
+me fournir (par email à biooss@yahoo.fr) un rapport d’étude (dans un format rédigé et
+agréable à lire) des résultats des calculs, de leurs interprétations, des figures et tableaux
+étayés par des interprétations, ainsi que le code R (dans un fichier unique).
+La fonction « borehole() » modélise l’écoulement de l’eau à travers un forage. La sortie
+(c’est-à-dire la réponse de la fonction) est le débit d’eau, en m3/an. Les 13 variables d'entrée
+de la fonction et leurs plages de variation habituelles sont :
+rw ∈ [0.05, 0.15] Rayon du forage (m)
+riw ∈ [0.02, 0.08]
+r ∈ [100, 50000]
+Rayon interne du forage (m)
+Rayon d’influence (m)
+Tu ∈ [63100, 116000] Transmissivité de l’aquifère supérieur (m2/an)
+Hu ∈ [1000, 1100] Hauteur potentiométrique de l’aquifère supérieur (m)
+Tum ∈ [6310, 11600]
+Hum ∈ [900, 1000]
+Tl ∈ [631, 1160]
+Hl ∈ [800, 900]
+Tl ∈ [63.1, 116]
+Transmissivité de l’aquifère moyen supérieur (m2/an)
+Hauteur potentiométrique de l’aquifère moyen supérieur (m)
+Transmissivité de l’aquifère moyen inférieur (m2/an)
+Hauteur potentiométrique de l’aquifère moyen inférieur (m)
+Transmissivité de l’aquifère inférieur (m2/an)
+Hl ∈ [700, 800] Hauteur potentiométrique de l’aquifère inférieur (m)
+L ∈ [1120, 1680] Longueur du forage (m)
+Kw ∈ [3000, 12000] Conductivité hydraulique du forage (m/an)
+Pour la quantification d’incertitudes, les distributions des variables d’entrée aléatoires sont :
+rw ~ Normal(μ=0.10, σ=0.015)
+riw ~ Normal(μ=0.05, σ=0.01)
+r ~ Lognormal(μ=7.71, σ=1.0056)
+Tu ~ Uniform[63100, 116000]
+Hu ~ Uniform[1000, 1100]
+Tum ~ Uniform[6310, 11600]
+Hum ~ Uniform[900, 1000]
+Tlm ~ Uniform[631, 1160]
+Hlm ~ Uniform[800, 900]
+Tl ~ Uniform[63.1, 116]
+Hl ~ Uniform[700, 800]
+L ~ Uniform[1120, 1680]
+Kw ~ Uniform[3000, 12000]
+avec Normal(μ, σ) la distribution normale de moyenne μ et variance σ2 et Lognormal(μ, σ) la
+distribution lognormale telle que le logarithme de la variable a une distribution Normal(μ, σ).
+1) Mise en place
+Récupérez le fichier « borehole.R » qui contient deux fonctions R déjà écrites :
+- le modèle de forage (fonction borehole()) permettant de calculer le débit d’eau en
+fonction des 13 entrées,
+- la fonction EchantBorehole() qui permettra de générer le vecteur des entrées suivant
+leurs lois de probabilité données ci-dessus.
+2
+Faites un premier test en évaluant la sortie aux valeurs minimales, moyennes et maximales
+des entrées. Donnez les résultats. Pour les valeurs minimales et maximales, prenez les
+valeurs données dans les intervalles de variation définis ci-dessus. Pour les valeurs
+moyennes, prenez les moyennes de lois données ci-dessus. Pour la valeur moyenne de la
+loi lognormale, ne vous trompez pas et dites comment vous la calculez.
+2) Propagation d’incertitudes par Monte Carlo
+a) Calculez la moyenne et la variance de la sortie par échantillonnage Monte Carlo de
+taille 1000. Tracez aussi son histogramme.
+b) En comparant au résultat obtenu en question 1), est-ce-que la moyenne de la
+fonction est égale à la fonction évaluée en la moyenne des entrées ? Qu’en
+déduisez-vous sur la fonction ?
+c) Avec le même échantillon, calculez le quantile d’ordre 95% de la sortie. Calculez-en
+un intervalle de confiance à 95% (en répétant l’estimation un grand nombre de fois et
+en récupérant les quantiles à 2.5% et 97.5% du quantile d’ordre 95%).
+d) Avec une erreur relative de 10%, calculez par Monte Carlo la probabilité que le débit
+du forage soit supérieur à 250 m3/an en augmentant progressivement la taille de
+l’échantillon (en partant par exemple d’une taille de 2.106 avec un pas d’incrément de
+2.106). Quelle a été la taille nécessaire pour l’échantillon ? Faîtes un graphe de
+convergence.
+3) Analyse de sensibilité
+a) Indices basés sur la régression linéaire
+i. A partir d’un échantillon Monte Carlo de taille 500 sur lequel la sortie ‘débit
+d’eau’ est calculée, tracez les scatterplots entre la sortie et les entrées sur
+le même graphique. Interprétez-les.
+ii. Sur le même échantillon, calculez les indices de sensibilité SRC² et
+interprétez-les. Est-il nécessaire d’aller plus loin (c’est-à-dire d’utiliser une
+autre méthode) dans l’analyse de sensibilité de la sortie ? N’avait-on pas
+déjà la réponse à cette question (cf. question 2) b)) ?
+b) Indices de Sobol : A l’aide du package « sensitivity », calculez les indices de
+Sobol’ du 1er ordre et totaux de la sortie par rapport à toutes les entrées en
+utilisant une taille d’échantillon adaptée, ainsi que la fonction (de calcul d’indices
+de Sobol’) la plus adaptée vue lors du TP4 qui permet aussi de contrôler la
+précision de vos estimations (via le bootstrap). Utilisez les outils appropriés pour
+interpréter les résultats.
+4) Ajustement et utilisation d’un métamodèle de krigeage
+a) Sur le même échantillon Monte Carlo de taille 500 qu’en 3) a), ajustez un modèle de
+krigeage et validez-le (par exemple avec le Q²). Améliore-t-il un modèle de régression
+linéaire ?
+b) Calculez les indices de Sobol’ avec la même méthode que celle du 3) b) mais sur le
+métamodèle de krigeage plutôt que sur la fonction borehole(). Comparez-les aux
+indices de Sobol’ obtenus en 3) b). Quel est l’intérêt pratique d’avoir utilisé un
+métamodèle ?
