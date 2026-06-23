@@ -1,3 +1,5 @@
+[🇫🇷 Version française](README.md)
+
 # Code — Scientific computing & numerical simulation portfolio
 
 A collection of my projects in **mathematical modelling**, **numerical methods**, **high-performance computing** and **scientific machine learning**, carried out during my Master's in Mathematical Engineering (Université Côte d'Azur / Polytech Nice-Sophia) and as personal projects.

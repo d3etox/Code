@@ -1,3 +1,5 @@
+[🇬🇧 English version](README.en.md)
+
 # Code — Portfolio de calcul scientifique & simulation numérique
 
 Recueil de mes projets en **modélisation mathématique**, **méthodes numériques**, **calcul haute performance** et **IA scientifique**, réalisés pendant mon Master Ingénierie Mathématique (Université Côte d'Azur / Polytech Nice-Sophia) et en projets personnels.

@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Compilés / objets
+*.o
+*.mod
+schwartz
+poisson
+
+# Environnements
+.venv/
+venv/
