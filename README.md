@@ -37,7 +37,7 @@ Recueil de mes projets en **modélisation mathématique**, **méthodes numériqu
 ### Optimisation & contrôle
 | Projet | Description | Méthode |
 |---|---|---|
-| [`Opti`](Opti) | Recherche de racines et optimisation | Méthode de Newton |
+| [`Opti`](Opti) | Optimisation d'un parc éolien & recherche de racines | Algorithme génétique, gradient, NOMAD, Newton |
 | [`Julia`](Julia) | Contrôle optimal & commande prédictive | **MPC** (JuMP/Ipopt), reinforcement learning |
 
 ### Quantification d'incertitude & statistiques

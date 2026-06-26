@@ -37,7 +37,7 @@ A collection of my projects in **mathematical modelling**, **numerical methods**
 ### Optimization & control
 | Project | Description | Method |
 |---|---|---|
-| [`Opti`](Opti) | Root finding and optimization | Newton's method |
+| [`Opti`](Opti) | Wind-farm optimization & root finding | Genetic algorithm, gradient, NOMAD, Newton |
 | [`Julia`](Julia) | Optimal control & model predictive control | **MPC** (JuMP/Ipopt), reinforcement learning |
 
 ### Uncertainty quantification & statistics
